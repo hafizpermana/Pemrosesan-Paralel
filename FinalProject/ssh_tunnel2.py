@@ -6,20 +6,22 @@ def main():
   return node1, node2, node3, node4
 
 def ssh_tunnel():
-  import paramiko
+  from paramiko import SSHClient,AutoAddPolicy
   import inputKal
   
   bool = True
   while(bool):
+    statusNode()
     komp = input("Masukan node yang melakukan komputasi? (delimiter with space) | ")
+    print("")
     kompli = list(komp.split(" "))
     kalku = inputKal.main() 
     
     for i in kompli:
       try:
         ip, port, username, password = accessNode(i)
-        tunnel = paramiko.SSHClient()
-        tunnel.set_missing_host_key_policy(paramiko.AutoAddPolicy)
+        tunnel = SSHClient()
+        tunnel.set_missing_host_key_policy(AutoAddPolicy)
         tunnel.connect(ip, port, username, password)
         print("node%s %s %s was CONNECTED" % (i, ip, username))
         stdin, stdout, stderr = tunnel.exec_command("cd /home/ && python kalkulasi.py")
@@ -37,20 +39,48 @@ def ssh_tunnel():
     bool = lagi()
   
   print("\nTerima kasih telah menggunakan program ini. :)")
+ 
+def statusNode():
+  from sys import exit
+  from paramiko import SSHClient,AutoAddPolicy
+
+  i = 1
+  status = []
+  print("\nsedang memeriksa connection...\n")
+  for j in main():
+    try:
+      print("node%d %s status " % (i, j['ip']), end="")
+      tunnel = SSHClient()
+      tunnel.set_missing_host_key_policy(AutoAddPolicy)
+      tunnel.connect(j['ip'], j['port'], j['username'], j['password'])
+      print("ONLINE  username:%s" % j['username'])
+      tunnel.close()
+      status.append("ONLINE")
+    except:
+      print("OFFLINE username:%s" % j['username'])
+      status.append("OFFLINE")
+    finally:
+      i = i + 1
+  print("")
+  if "ONLINE" in status:
+    pass
+  else:
+    print("Semua node sedang OFFLINE, tidak ada yang dapat dilakukan.")
+    print("\nTerima kasih telah menggunakan program ini. :)")
+    exit()
     
+   
 def lagi():
   dec = input("Apakah anda ingin melakukan komputasi lagi? (y/n) | ")
+  print("")
   if dec.casefold() == "n":
     return False
   else:
     return True
       
 def accessNode(i):
-  node1, node2, node3, node4 = main()
-  
-  temp = locals()
-  exec("tempNode = node%s" % i, globals(), temp)
-  tempNode = temp["tempNode"]
+  i = int(i) - 1
+  tempNode = main()[i]
   ip = tempNode['ip']
   port = tempNode['port']
   username = tempNode['username']
