@@ -4,4 +4,4 @@ kalulasi.py harus berada di client OS.
 
 Client OS wajib openssh agar bisa diakses.
 
-3 file(file.py, ssh_tunnel2.py, inputKal.py) harus berada dalam host OS.
+3 file(ssh_tunnel2.py, inputKal.py) harus berada dalam host OS.
