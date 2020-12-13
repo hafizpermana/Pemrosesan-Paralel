@@ -22,8 +22,9 @@ def ssh_tunnel():
         ip, port, username, password = accessNode(i)
         tunnel = SSHClient()
         tunnel.set_missing_host_key_policy(AutoAddPolicy)
-        tunnel.connect(ip, port, username, password)
-        print("node%s %s %s was CONNECTED" % (i, ip, username))
+        tunnel.connect(ip, port, username, password, timeout=3)
+        print("The Connection was CONNECTED")
+        print("Hasil Komputasi dari node%s %s %s \n" % (i, ip, username))
         stdin, stdout, stderr = tunnel.exec_command("cd /home/ && python kalkulasi.py")
         stdin.write(kalku)
         stdin.close()
@@ -38,7 +39,7 @@ def ssh_tunnel():
         
     bool = lagi()
   
-  print("\nTerima kasih telah menggunakan program ini. :)")
+  print("Terima kasih telah menggunakan program ini. :)")
  
 def statusNode():
   from sys import exit
@@ -52,7 +53,7 @@ def statusNode():
       print("node%d %s status " % (i, j['ip']), end="")
       tunnel = SSHClient()
       tunnel.set_missing_host_key_policy(AutoAddPolicy)
-      tunnel.connect(j['ip'], j['port'], j['username'], j['password'])
+      tunnel.connect(j['ip'], j['port'], j['username'], j['password'], timeout=3)
       print("ONLINE  username:%s" % j['username'])
       tunnel.close()
       status.append("ONLINE")
@@ -79,12 +80,12 @@ def lagi():
     return True
       
 def accessNode(i):
-  i = int(i) - 1
-  tempNode = main()[i]
-  ip = tempNode['ip']
-  port = tempNode['port']
-  username = tempNode['username']
-  password = tempNode['password']
-  return ip, port, username, password
-  
+  try:
+    i = int(i) - 1
+    tempNode = main()[i]
+    return tempNode['ip'], tempNode['port'], tempNode['username'], tempNode['password']
+  except:
+    print("Tidak ada node%s" % (i+1))
+    ssh_tunnel()
+    
 ssh_tunnel()

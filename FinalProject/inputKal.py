@@ -13,7 +13,7 @@ def main():
     a = luasPersegi()
     return "3\n" + a + "\n" + a
   else:
-    print("Masukan anda tidak valid")
+    print("Masukan anda tidak valid \n")
     return "0"
 
 def luasSegitiga():
